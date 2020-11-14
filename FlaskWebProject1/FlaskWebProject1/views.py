@@ -3,7 +3,7 @@ Routes and views for the flask application.
 """
 import datetime
 import pickle
-import os.path
+import os
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -19,7 +19,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 bp = Blueprint('auth', __name__)
 
@@ -43,10 +43,6 @@ def connect_to():
 
     service = build('calendar', 'v3', credentials=creds)  
     return service
-
-service = connect_to()
-
-ser = False
 
 #@bp.route('/')
 #@bp.route('/home')
@@ -132,13 +128,13 @@ def login():
     #    flash(error)
 
     #return render_template('login.html')
-    global ser
-    ser = True
-      
+    service = connect_to()
+    if service:
+      session['user']=True   
     return render_template('login.html')
 
-@bp.before_app_request
-def load_logged_in_user():
+#@bp.before_app_request
+#def load_logged_in_user():
     #user_id = session.get('user_id')
 
     #if user_id is None:
@@ -147,21 +143,27 @@ def load_logged_in_user():
     #    g.user = get_db().execute(
     #        'SELECT * FROM user WHERE id = ?', (user_id,)
     #    ).fetchone()
-    global ser
-    if ser :
-        g.user = True
-    else:
-        g.user = None
+
+    #global ser
+    #if ser :
+    #    g.user = True
+    #else:
+    #    g.user = None
 
 @bp.route('/logout')
 def logout():
-    session.clear()
+    #session.clear()
+    #global ser
+    #ser = False
+    session['user']=False
+    if os.path.exists('token.pickle'):
+        os.remove('token.pickle')
     return redirect(url_for('index'))
 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if g.user is None:
+        if not session.get('user'):
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)

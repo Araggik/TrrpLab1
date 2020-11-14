@@ -12,5 +12,10 @@
     <input type="password" name="password" id="password" required>
     <input type="submit" value="Log In">
 </form>-->
+  {% if not session.get('user') %}
+<h1>Fail</h1>
+  {% endif %}
+  {% if session.get('user') %}
 <h1>Success</h1>
+  {% endif %}
 {% endblock %}

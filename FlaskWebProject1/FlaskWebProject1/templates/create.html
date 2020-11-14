@@ -5,11 +5,17 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="post" style="display:flex; flex-direction:column">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+    <label for="date">Date</label>
+    <input type ="date" name="date" id="date" value="{{ request.form['date'] }}" required>
+    <label for="start">Start</label>
+    <input name="start" id="start" value="{{ request.form['start'] }}" required>
+    <label for="end">End</label>
+    <input name="end" id="end" value="{{ request.form['end'] }}" required>
+    <label for="loc">Location</label>
+    <textarea name="loc" id="loc">{{ request.form['loc'] }}</textarea>
     <input type="submit" value="Save">
 </form>
 {% endblock %}
