@@ -23,16 +23,20 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand">To Do Server</a>
+                <a href="/" class="navbar-brand">Events Server</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('blog.index') }}">Home</a></li>
                     <li><a href="{{ url_for('auth.about') }}">About</a></li>
                     <li><a href="{{ url_for('auth.contact') }}">Contact</a></li>
-                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
-                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% if session.get('user') %}
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    {% endif %}
+                    {% if not session.get('user') %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    {% endif %}
+
                 </ul>
             </div>
         </div>
