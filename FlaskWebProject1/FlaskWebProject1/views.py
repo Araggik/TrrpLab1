@@ -1,6 +1,7 @@
 """
 Routes and views for the flask application.
 """
+import json
 import datetime
 import pickle
 import os
@@ -22,12 +23,35 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 bp = Blueprint('auth', __name__)
 
+#def connect_to():
+#    creds = None
+
+#    if os.path.exists('token.pickle'):
+#        with open('token.pickle', 'rb') as token:
+#            creds = pickle.load(token)
+
+#    if not creds or not creds.valid:
+#        if creds and creds.expired and creds.refresh_token:
+#            creds.refresh(Request())
+#        else:
+#            flow = InstalledAppFlow.from_client_secrets_file(
+#                'credentials.json', SCOPES)
+#            creds = flow.run_local_server(port=0)
+
+#        with open('token.pickle', 'wb') as token:
+#            pickle.dump(creds, token)
+    
+#    service = build('calendar', 'v3', credentials=creds)  
+#    return service
+
 def connect_to():
     creds = None
 
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
+    #if os.path.exists('token.pickle'):
+    #    with open('token.pickle', 'rb') as token:
+    #        creds = pickle.load(token)
+    if session.get('cred'):
+        creds = pickle.loads(session.get('cred'))
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -37,8 +61,10 @@ def connect_to():
                 'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
 
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
+        #with open('token.pickle', 'wb') as token:
+        #    pickle.dump(creds, token)
+            session['cred'] = pickle.dumps(creds)
+
     
     service = build('calendar', 'v3', credentials=creds)  
     return service
@@ -74,6 +100,7 @@ def login():
 @bp.route('/logout')
 def logout():
     session['user']=False
+    session['cred']=None
     if os.path.exists('token.pickle'):
         os.remove('token.pickle')
     return redirect(url_for('index'))
